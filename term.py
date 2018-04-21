@@ -23,11 +23,16 @@ class Term:
             self.denominator = denominator
 
         else:
-            _numerator = to_integer_ratio(numerator)
-            _denominator = to_integer_ratio(denominator)
-            temp = Term(*(_numerator)) / Term(*(_denominator))
-            self.numerator = temp.numerator
-            self.denominator = temp.denominator
+            try:
+                _numerator = to_integer_ratio(numerator)
+                _denominator = to_integer_ratio(denominator)
+                temp = Term(*(_numerator)) / Term(*(_denominator))
+                self.numerator = temp.numerator
+                self.denominator = temp.denominator
+            except TypeError as e:
+                print(numerator, denominator)
+                print(to_integer_ratio(numerator), to_integer_ratio(denominator))
+                raise e
         self.simplify()
 
 #        if isinstance(numerator, int) and isinstance(denominator, int):
@@ -49,11 +54,12 @@ class Term:
 #        self.simplify()
 
     def __repr__(self):
-        return (f'Term({self.numerator})' if self.denominator == 1
-                else f'Term({self.numerator}, {self.denominator})')
+        return str(self)
+        # return (f'Term({self.numerator})' if self.denominator == 1 or self.numerator == 0
+        #         else f'Term({self.numerator}, {self.denominator})')
 
     def __str__(self):
-        return (f'{self.numerator}' if self.denominator == 1
+        return (f'{self.numerator}' if self.denominator == 1 or self.numerator == 0
                 else f'{self.numerator}/{self.denominator}')
 
     def __mul__(self, other):
@@ -105,16 +111,39 @@ class Term:
         else:
             return self == Term(other)
 
+    def __gt__(self, other):
+        return float(self) > float(other)
+
+    def __lt__(self, other):
+        return float(self) < float(other)
+
+    def __ge__(self, other):
+        return float(self) >= float(other)
+
+    def __le__(self, other):
+        return float(self) <= float(other)
+
     def __float__(self):
         return float(self.numerator / self.denominator)
 
     def __bool__(self):
         return not self.is_zero()
 
+    def __abs__(self):
+        return Term(abs(self.numerator), abs(self.denominator))
+
     def simplify(self):
         _gcd = gcd(self.numerator, self.denominator)
         self.numerator = self.numerator // _gcd
         self.denominator = self.denominator // _gcd
+        if self.numerator < 0 and self.denominator < 0:
+            # minus and minus => plus
+            self.numerator = abs(self.numerator)
+            self.denominator = abs(self.denominator)
+        elif self.numerator > 0 and self.denominator < 0:
+            # puts the sign on the numerator
+            self.numerator = -self.numerator
+            self.denominator = abs(self.denominator)
 
     def as_integer_ratio(self):
         self.simplify()
