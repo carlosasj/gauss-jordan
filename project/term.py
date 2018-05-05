@@ -23,44 +23,20 @@ class Term:
             self.denominator = denominator
 
         else:
-            try:
-                _numerator = to_integer_ratio(numerator)
-                _denominator = to_integer_ratio(denominator)
-                temp = Term(*(_numerator)) / Term(*(_denominator))
-                self.numerator = temp.numerator
-                self.denominator = temp.denominator
-            except TypeError as e:
-                print(numerator, denominator)
-                print(to_integer_ratio(numerator), to_integer_ratio(denominator))
-                raise e
+            _numerator = to_integer_ratio(numerator)
+            _denominator = to_integer_ratio(denominator)
+            temp = Term(*(_numerator)) / Term(*(_denominator))
+            self.numerator = temp.numerator
+            self.denominator = temp.denominator
         self.simplify()
-
-#        if isinstance(numerator, int) and isinstance(denominator, int):
-#            # if both are just integers
-#            self.numerator = numerator
-#            self.denominator = denominator
-#        else:
-#            # one of them is float or Term
-#            numerator = (float(numerator) if isinstance(numerator, int)
-#                         else numerator)
-#            denominator = (float(denominator) if isinstance(denominator, int)
-#                           else denominator)
-#
-#            numerator = Term(*(numerator.as_integer_ratio()))
-#            denominator = Term(*(denominator.as_integer_ratio()))
-#            result = numerator / denominator
-#            self.numerator = result.numerator
-#            self.denominator = result.denominator
-#        self.simplify()
 
     def __repr__(self):
         return str(self)
-        # return (f'Term({self.numerator})' if self.denominator == 1 or self.numerator == 0
-        #         else f'Term({self.numerator}, {self.denominator})')
 
     def __str__(self):
-        return (f'{self.numerator}' if self.denominator == 1 or self.numerator == 0
-                else f'{self.numerator}/{self.denominator}')
+        return (
+            f'{self.numerator}' if self.denominator == 1 or self.numerator == 0
+            else f'{self.numerator}/{self.denominator}')
 
     def __mul__(self, other):
         if isinstance(other, Term):
@@ -99,8 +75,9 @@ class Term:
         else:
             return self - Term(other)
 
-    # def __deepcopy__(self):
-    #     return Term(self.numerator, self.denominator)
+    def __format__(self, formatstr):
+        tpl = f"{{:{formatstr}}}"
+        return tpl.format(str(self))
 
     def __eq__(self, other):
         if isinstance(other, Term):

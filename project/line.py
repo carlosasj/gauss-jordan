@@ -1,4 +1,4 @@
-from term import Term
+from .term import Term
 from typing import Iterable, Union
 
 
@@ -15,11 +15,13 @@ class Line:
 
     def __repr__(self):
         return str(self)
-        # return f"Line([{', '.join(map(repr, self.items))}], {repr(self.augmented)})"
 
     def __str__(self):
-        cell = lambda i: '{:>8}'.format(str(i))
-        return f"[{''.join(map(cell, self.items))}   |{cell(self.augmented)}  ]"
+        def cell(i):
+            return '{:>8}'.format(str(i))
+
+        return (
+            f"[{''.join(map(cell, self.items))}   |{cell(self.augmented)}  ]")
 
     def __mul__(self, other):
         if not isinstance(other, (int, float, Term)):
@@ -49,7 +51,6 @@ class Line:
         result_augmented = self.augmented + other.augmented
         return Line(result_items, result_augmented)
 
-
     def __sub__(self, other):
         if not isinstance(other, Line):
             raise NotImplementedError()
@@ -60,7 +61,9 @@ class Line:
     def __eq__(self, other):
         if not isinstance(other, Line):
             raise NotImplementedError()
-        equal_items = all(map(lambda x: x[0] == x[1], zip(self.items, other.items)))
+        equal_items = all(
+            map(lambda x: x[0] == x[1], zip(self.items, other.items))
+        )
         if not equal_items:
             return False
         elif self.augmented == other.augmented:
@@ -74,7 +77,11 @@ class Line:
     def __getitem__(self, key):
         if not isinstance(key, int):
             raise KeyError('Key must be an integer')
-        return self.items[key]
+        try:
+            return self.items[key]
+        except IndexError as e:
+            print(f'index: {key}')
+            raise e
 
     def __setitem__(self, key, value):
         if not isinstance(key, int):
