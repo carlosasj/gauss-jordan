@@ -48,7 +48,3 @@ def prompt():
 
     for i in range(len(terms_name)):
         print(f'{terms_name[i]} = {fn_format(result[i].augmented)}')
-
-
-if __name__ == '__main__':
-    prompt()
